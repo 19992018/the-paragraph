@@ -14,10 +14,12 @@ a. npm i ejs\
 b. in index.js, set up an express server\
 here you will eventually:
 
-- require ejs\
-- set the view engine to ejs\
-app.set('view engine', 'ejs');\
--res.render one of your ejs pages\
+- require ejs
+- set the view engine to ejs
+
+app.set('view engine', 'ejs')
+
+- res.render one of your ejs pages
 
 c. create a views folder\
 under it create a pages sub-folder and a partials-subfolder\
@@ -32,9 +34,105 @@ It is important to note that at this point -when you're testing- your css won't 
 This is where the public folder comes in.\
 Cut your css file from wherever it is and paste it into the public folder.\
 in your header.ejs, adjust the link to be *relative by adding a foward slash at its beginning\
-At this point when you test your html and css should display just fine. \
+At this point when you test your html and css should display just fine.\
 
-(To be continued)
+### 3. Mongo DB/Mongoose
+a. We of course start by npm installing 'mongoose' and 'mongo db'\
+b. Require mongoose in index.js\
+c. Create a database in cloud.mongodb.com\
+d. Connect to the database in index.js\
+
+mongoose
+  .connect(MONGO_URL)\
+  .then(() => {\
+    console.log("successfully connected to database");
+  })\
+  .catch(() => {\
+    console.log("error connecting to database :-( ...");\
+  });
+
+  (In place of MONGO_URL you may use the actual connection string obtained from cloud.mongodb.com\
+  Though it's advisable to use the variable MONGO_URL and store the connection string in a .env file\
+  We'll talk about .env later)
+
+  e. Create a models folder\
+  f. create the relevant file(s) in this case model.article.js
+  g. create your schema in that file. Your model variable as well. Export schema variable.
+
+  //require\
+const mongoose = require("mongoose");\
+
+//create schema\
+const ArticleSchema = mongoose.Schema(\
+  {\
+    title: {\
+      type: String,\
+      //   required: true,\
+    },\
+    content: {
+      type: String,\
+      //   required: true,\
+    },\
+  },\
+  {
+    timestamps: true,
+  }\
+);
+
+//create model\
+const Article = mongoose.model("Article", ArticleSchema);\
+
+//export model\
+module.exports = { Article };
+
+h. Import the schema you created in model file into index.js\
+g. Now you're ready to merge Mongoose and EJS.
+
+### 4. Merging EJS with Mongoose (+ express)
+First ensure these two lines are in your code:\
+
+app.use(express.json());\
+app.use(bodyParser.urlencoded({ extended: true }));
+
+body-parser is importaant because: body-parser is essential for handling incoming data in a variety of formats, such as JSON, URL-encoded form data, and raw or text data. It transforms this data into a readable format under req. body for easier processing in your application.
+
+After those two lines are in place, the code below will work
+
+```
+// index page
+//Where to find/get all articles
+app.get("/", async function (req, res) {
+  try {
+    const articles = await Article.find();
+    res.render("pages/index", { articles: articles });
+    // res.status(200).json(Article);
+  } catch (err) {
+    console.log("error fetching posts", err);
+    res.status(500).send("error fetching posts");
+  }
+});
+
+//renders the create page
+app.get("/create", function (req, res) {
+  res.render("pages/create");
+});
+
+//at create page, we have set the form to post to / route
+//so post method is userd to create
+// we then res.redirect to home page, where all content is rendered
+app.post("/", async function (req, res) {
+  await Article.create({
+    title: req.body.title,
+    content: req.body.content,
+  });
+  res.redirect("/");
+});
+```
+  
+
+  
+
+
 
 
 
