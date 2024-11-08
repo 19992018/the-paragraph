@@ -1,3 +1,5 @@
+
+
 # the-paragraph
 A blog website. Implemented using: HTML, CSS, JS, EJS, Mongo DB, Express and NodeJS
 
@@ -129,7 +131,7 @@ app.post("/", async function (req, res) {
 });
 ```
   
-
+NB: It turns out I had already created another repo for the project I intended to come here. The other repo is sample-blog, on this account. I might delete this particular repo later.
   
 
 
